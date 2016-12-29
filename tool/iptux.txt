@@ -1,0 +1,12 @@
+飞鸽
+1.安装:
+sudo apt-get install iptux 
+或者
+http://www.linuxidc.com/Linux/2016-03/129571.htm
+2.ubuntu下的iptux和Windows下的飞秋互传的问题
+http://www.bubuko.com/infodetail-1405975.html
+sudo apt-add-repository ppa:fixnix/indicator-systemtray-unity
+sudo apt-get update
+sudo apt-get install indicator-systemtray-unity
+3.设置
+在软件打开的Tools
