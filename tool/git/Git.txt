@@ -1,0 +1,167 @@
+//simple git introduction
+一.以上完成了本地到远程仓库的提交.
+$ mkdir test_proj
+$ cd test_proj
+$ echo "#xiner" > readme.txt
+$ git init   //Create a new empty local repository in the current directory
+<log>Initialized empty Git repository in /home/user/test_proj/.git/
+$ git commit -m "first commit"  //commit
+$ git remote add origin https://github.com/lifeliyan/doc.git   //This link 
+//    comes from the repository created by github and can be viewed by 
+//    logging in to github
+$ git push -u origin master
+
+二.git push失败
+a.log日志中提到rsa
+  参考:http://www.cnblogs.com/wuzhiyi/p/4645556.html
+       http://blog.csdn.net/hustpzb/article/details/8230454/
+三.git的命令
+1.显示信息类命令:
+git ls-files -u 显示冲突的文件，-s是显示标记为冲突已解决的文件
+git diff 对比工作区和stage文件的差异 
+git diff --cached 对比stage和branch之间的差异
+git branch 列出当前repository下的所有branch 
+git branch --a 列出local 和remote下的所有branch
+git ls-files --stage 检查保存在stage的文件
+git log 显示到HEAD所指向的commit为止的所有commit记录 。使用reset HEAD~n 命令使HEAD指针向前移动，会导致HEAD之后的commit记录不会被显示。
+git log -g则会查询reflog去查看最近做了哪些动作，这样可以配合git branch 恢复之前因为移动HEAD指针所丢弃的commit对象。如果reflog丢失则可以通过git fsck --full来查看没被引用的commit对象。 
+git log -p -2 对比最新两次的commit对象 
+log -1 HEAD
+git log --pretty=oneline
+git log --stat 1a410e 查看sha1为1a410e的commit对象的记录
+git blame -L 12,22 sth.cs 如果你发现自己代码中 的一个方法存在缺陷,你可以用git blame来标注文件,查看那个方法的每一行分别是由谁 在哪一天修改的。下面这个例子使用了-L选项来限制输出范围在第12至22行 
+
+2.创建类命令
+git brach branchName 创建名为branchName的branch 
+git checkout branchName 切换到branchName的branch 
+git checkout -b 创建并切换，也就是上面两个命令的合并
+git brach branchName ef71 从commit ef71创建名为branchName的branch
+
+3.撤销类命令
+如果是单个文件 
+	(a).use "git reset HEAD <file>..." to unstage 
+	如果已经用add 命令把文件加入stage了，就先需要从stage中撤销,然后再从工作区撤销 
+	(b).use "git checkout -- <file>..." to discard changes in working directory
+	git checkout a.txt  撤销a.txt的变动（工作区上的文件） 
+如果是多个文件 
+git chenkout .
+
+如果已经commit 了，则需要 
+git commit --amend 来修改，这个只能修改最近上一次的,也就是用一个新的提交来覆盖上一次的提交。因此如果push以后再做这个动作就会有危险
+$ git reset --hard HEAD 放弃工作区和index的改动,HEAD指针仍然指向当前的commit.（参照第一幅图）
+这条命令同时还可以用来撤销还没commit的merge,其实原理就是放弃index和工作区的改动，因为没commit的改动只存在于index和工作区中。
+$ git reset --hard HEAD^ 用来撤销已经commit的内容(等价于 git reset --hard HEAD~1) 。原理就是放弃工作区和index的改动，同时HEAD指针指向前一个commit对象。
+git revert 也是撤销命令，区别在于reset是指向原地或者向前移动指针，git revert是创建一个commit来覆盖当前的commit,指针向后移动
+
+4.提交类命令
+git add 跟踪新文件或者已有文件的改动，或者用来解决冲突
+
+git commit 把文件从stage提交到branch
+
+git commit -a 把修改的文件先提交到stage,然后再从stash提交到branch
+
+5.删除类命令
+git rm --cached readme.txt 只从stage中删除，保留物理文件
+
+git rm readme.txt 不但从stage中删除，同时删除物理文件
+
+git mv a.txt b.txt 把a.txt改名为b.txt
+6.Merge类命令
+在冲突状态下，需要解决冲突的文件会从index打回到工作区。
+(1).用工具或者手工解决冲突 
+(2).git add 命令来表明冲突已经解决。 
+(3).再次commit 已解决冲突的文件。
+
+git reset --hard ORIG_HEAD 用来撤销已经commit 的merge. 
+git reset --hard HEAD 用来撤销还没commit 的merge,其实原理就是放弃index和工作区的改动。
+git reset --merge ORIG_HEAD，注意其中的--hard 换成了 --merge，这样就可以避免在回滚时清除working tree.
+
+7.Git补丁管理
+git diff > ../sync.patch # 生成补丁
+
+git apply ../sync.patch # 打补丁
+
+git apply --check ../sync.patch #测试补丁能否成功
+
+8.Git暂存管理
+git stash # 暂存
+
+git stash list # 列所有stash
+
+git stash apply # 恢复暂存的内容
+
+git stash drop # 删除暂存区
+
+9.Git远程分支管理
+git pull # 抓取远程仓库所有分支更新并合并到本地
+
+git pull --no-ff # 抓取远程仓库所有分支更新并合并到本地，不要快进合并
+
+git fetch origin # 抓取远程仓库更新
+
+git merge origin/master # 将远程主分支合并到本地当前分支
+
+git co --track origin/branch # 跟踪某个远程分支创建相应的本地分支
+
+git co -b <local_branch> origin/<remote_branch> # 基于远程分支创建本地分支，功能同上
+
+git push # push所有分支
+
+git push origin master # 将本地主分支推到远程主分支
+
+git push -u origin master # 将本地主分支推到远程(如无远程主分支则创建，用于初始化远程仓库)
+
+git push origin <local_branch> # 创建远程分支， origin是远程仓库名
+
+git push origin <local_branch>:<remote_branch> # 创建远程分支
+
+git push origin :<remote_branch> #先删除本地分支(git br -d <branch>)，然后再push删除远程分支
+
+10.Git远程仓库管理
+git remote -v # 查看远程服务器地址和仓库名称
+
+git remote show origin # 查看远程服务器仓库状态
+
+git remote add origin git@ github:robbin/robbin_site.git # 添加远程仓库地址
+
+git remote set-url origin git@ github.com:robbin/robbin_site.git # 设置远程仓库地址(用于修改远程仓库地址) git remote rm <repository> # 删除远程仓库
+
+11.创建远程仓库
+git clone --bare robbin_site robbin_site.git # 用带版本的项目创建纯版本仓库
+
+scp -r my_project.git git@ git.csdn.net:~ # 将纯仓库上传到服务器上
+
+mkdir robbin_site.git && cd robbin_site.git && git --bare init # 在服务器创建纯仓库
+
+git remote add origin git@ github.com:robbin/robbin_site.git # 设置远程仓库地址
+
+git push -u origin master # 客户端首次提交
+
+git push -u origin develop # 首次将本地develop分支提交到远程develop分支，并且track
+
+git remote set-head origin master # 设置远程仓库的HEAD指向master分支
+
+也可以命令设置跟踪远程库和本地库
+
+git branch --set-upstream master origin/master
+
+git branch --set-upstream develop origin/develop
+
+
+
+
+
+
+/*网上参考链接*/
+
+http://blog.csdn.net/zpf336/article/details/50804407
+http://blog.csdn.net/junli_chen/article/details/52623350
+
+
+
+
+
+
+
+
+
